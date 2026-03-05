@@ -1,6 +1,54 @@
-<h2>{{ doc.title }}</h2>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{{ doc.title }} — InvoiceVault</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
 
-<p><strong>Invoice ID:</strong> {{ doc.public_id }}</p>
-<p>{{ doc.content }}</p>
+<nav>
+  <a class="nav-brand" href="/dashboard">
+    <span class="nav-brand-icon">▦</span>
+    INVOICEVAULT
+  </a>
+  <ul class="nav-links">
+    <li><a href="/dashboard">DASHBOARD</a></li>
+    <li><a href="/logout">LOGOUT</a></li>
+  </ul>
+</nav>
 
-<a href="/dashboard">Back</a>
+<main>
+  <div class="page-header">
+    <div>
+      <div class="page-title">▦ INVOICE <span>/ {{ doc.public_id }}</span></div>
+      <div class="page-subtitle">DOCUMENT DETAIL VIEW</div>
+    </div>
+    <a href="/dashboard" class="btn btn-secondary btn-sm">← BACK</a>
+  </div>
+
+  <div class="invoice-card">
+    <div class="invoice-card-row">
+      <div class="invoice-card-label">INVOICE ID</div>
+      <div class="invoice-card-id">{{ doc.public_id }}</div>
+    </div>
+
+    <hr class="divider">
+
+    <div class="invoice-card-row">
+      <div class="invoice-card-label">TITLE</div>
+      <div class="invoice-card-value">{{ doc.title }}</div>
+    </div>
+
+    <div class="invoice-card-row">
+      <div class="invoice-card-label">CONTENT</div>
+      <div class="invoice-card-value">{{ doc.content }}</div>
+    </div>
+  </div>
+</main>
+
+</body>
+</html>

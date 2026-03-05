@@ -1,7 +1,35 @@
-<h2>Login</h2>
-<form method="POST">
-  Username: <input name="username"><br>
-  Password: <input name="password" type="password"><br>
-  <button type="submit">Login</button>
-</form>
-<a href="/register">Register</a>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login — InvoiceVault</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+<div class="auth-wrapper">
+  <div class="auth-box">
+    <div class="auth-logo">▦ INVOICEVAULT</div>
+    <div class="auth-sub">SECURE INVOICE PORTAL // AUTHORIZED ACCESS ONLY</div>
+
+    <form method="POST">
+      <div class="field">
+        <label>USERNAME</label>
+        <input type="text" name="username" autocomplete="off" required />
+      </div>
+      <div class="field">
+        <label>PASSWORD</label>
+        <input type="password" name="password" required />
+      </div>
+      <button class="btn btn-primary" type="submit">AUTHENTICATE</button>
+    </form>
+
+    <div class="auth-alt">
+      No account? <a href="/register">REGISTER</a>
+    </div>
+  </div>
+</div>
+</body>
+</html>

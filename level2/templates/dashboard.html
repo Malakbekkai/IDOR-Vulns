@@ -1,15 +1,50 @@
-<h2>Your Invoices</h2>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard — InvoiceVault</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
 
-{% if docs %}
-  {% for doc in docs %}
-    <p>
-      <a href="/invoice/{{ doc.public_id }}">
-        {{ doc.title }} ({{ doc.public_id }})
-      </a>
-    </p>
-  {% endfor %}
-{% else %}
-  <p>No invoices found.</p>
-{% endif %}
+<nav>
+  <a class="nav-brand" href="/dashboard">
+    <span class="nav-brand-icon">▦</span>
+    INVOICEVAULT
+  </a>
+  <ul class="nav-links">
+    <li><a href="/dashboard">DASHBOARD</a></li>
+    <li><a href="/logout">LOGOUT</a></li>
+  </ul>
+</nav>
 
-<a href="/logout">Logout</a>
+<main>
+  <div class="page-header">
+    <div>
+      <div class="page-title">▦ YOUR INVOICES</div>
+      <div class="page-subtitle">DOCUMENT PORTAL // READ-ONLY ACCESS</div>
+    </div>
+  </div>
+
+  {% if docs %}
+  <div class="invoice-list">
+    {% for doc in docs %}
+    <a class="invoice-item" href="/invoice/{{ doc.public_id }}">
+      <div class="invoice-item-left">
+        <div class="invoice-title">{{ doc.title }}</div>
+        <div class="invoice-id">{{ doc.public_id }}</div>
+      </div>
+      <div class="invoice-arrow">→</div>
+    </a>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="empty-state">NO INVOICES FOUND.</div>
+  {% endif %}
+</main>
+
+</body>
+</html>

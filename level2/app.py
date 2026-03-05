@@ -32,7 +32,7 @@ def init_db():
             owner_id INTEGER,
             title TEXT,
             content TEXT,
-            public_id TEXT UNIQUE
+            public_id TEXT
         )
     """)
 
@@ -40,8 +40,9 @@ def init_db():
     c.execute("INSERT INTO users (username, password) VALUES (?, ?)",
               ("admin", "admin123"))
 
-    # Insert noise invoices INV-0001 → INV-0008
-    for i in range(1, 9):
+    # Noise invoices — skipping INV-001, INV-003, INV-004, INV-008
+    noise_numbers = [2, 5, 6, 7]
+    for i in noise_numbers:
         public_id = f"INV-{i:03d}"
         c.execute("""
             INSERT INTO documents (owner_id, title, content, public_id)
@@ -53,7 +54,7 @@ def init_db():
             public_id
         ))
 
-    # 🔥 FLAG at INV-0009
+    # 🔥 FLAG at INV-009
     c.execute("""
         INSERT INTO documents (owner_id, title, content, public_id)
         VALUES (?, ?, ?, ?)
@@ -72,6 +73,20 @@ def get_db():
     conn = sqlite3.connect(DATABASE)
     conn.row_factory = sqlite3.Row
     return conn
+
+
+def create_default_invoice(conn, user_id, username):
+    """Give every user the same INV-000 welcome invoice (one row per user).
+    The dashboard filters by owner_id so each user only sees their own copy."""
+    conn.execute("""
+        INSERT INTO documents (owner_id, title, content, public_id)
+        VALUES (?, ?, ?, ?)
+    """, (
+        user_id,
+        "Welcome Invoice",
+        "This is your default invoice. Keep it safe.",
+        "INV-000"
+    ))
 
 
 @app.route("/")
@@ -94,11 +109,21 @@ def register():
                 (username, password)
             )
             conn.commit()
-        except:
-            return "Username already exists"
-        finally:
-            conn.close()
 
+            # Get the newly created user's id
+            user = conn.execute(
+                "SELECT id FROM users WHERE username=?", (username,)
+            ).fetchone()
+
+            # Create their default invoice
+            create_default_invoice(conn, user["id"], username)
+            conn.commit()
+
+        except Exception:
+            conn.close()
+            return "Username already exists"
+
+        conn.close()
         return redirect("/login")
 
     return render_template("register.html")
