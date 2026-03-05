@@ -1,7 +1,7 @@
 # ▣ THE ARCHIVE — CTF Challenge
 
 **Category:** Web  
-**Difficulty:** Hard  
+**Difficulty:** Medium 
 **Type:** Chained IDOR (3 steps)  
 **Flag:** `CTF{1D0R_ch41n_m4st3r_arc41v1st}`
 
@@ -15,7 +15,7 @@ the-archive/
 ├── docker-compose.yml
 ├── README.md
 └── app/
-    ├── app.py                  # Flask application (all vulns here)
+    ├── app.py                  # Flask application 
     ├── entrypoint.sh           # DB init + gunicorn start
     ├── requirements.txt
     ├── static/
@@ -49,17 +49,6 @@ Visit: http://localhost:5000
 
 ---
 
-## CTF-Safety Design
-
-| Concern                   | Solution                                                                 |
-|---------------------------|--------------------------------------------------------------------------|
-| Players affecting each other | Each player registers their own account; only shared state is admin docs |
-| DB corruption             | SQLite in `/tmp` (tmpfs); reset on restart via `docker compose restart`  |
-| Brute-force DoS           | `/export` rate-limited to 10 req/min per user                            |
-| Flag isolation            | Flag is a document content, read-only seeded by init; no user can modify |
-
----
-
 ## Vulnerability Chain (Spoiler / Admin Reference)
 
 ### STEP 1 — Find the admin's internal numeric ID
@@ -80,11 +69,6 @@ pattern by seeing their own ID in the comment and trying `1`.
 `GET /folders` is supposed to return only your folders — but the `owner`
 query parameter is **not** server-side validated against the session.
 
-```bash
-curl -b "session=<your_cookie>" \
-  "http://localhost:5000/folders?owner=1"
-```
-
 Response:
 ```json
 [{"id": 1, "name": "Classified"}]
@@ -103,13 +87,6 @@ Rate limit: 10 req/min per user.
 
 Brute-force `doc` from 1 to ~10:
 
-```bash
-for i in $(seq 1 10); do
-  curl -s -b "session=<cookie>" \
-    "http://localhost:5000/export?folder=1&doc=$i&format=txt"
-  echo "--- doc $i ---"
-done
-```
 
 Doc ID **7** returns the flag:
 
@@ -128,22 +105,3 @@ CTF{1D0R_ch41n_m4st3r_arc41v1st}
 - UUID in profile page (the *public* identifier — not exploitable)
 
 ---
-
-## Customising the Flag
-
-Set the `FLAG` env variable:
-
-```bash
-docker run -p 5000:5000 -e FLAG="CTF{your_custom_flag}" the-archive
-# or in docker-compose.yml → environment → FLAG
-```
-
----
-
-## Resetting Between Rounds
-
-```bash
-docker compose down && docker compose up --build
-```
-
-This wipes `/tmp/archive.db` and re-seeds the admin + flag documents.

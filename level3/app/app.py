@@ -18,7 +18,7 @@ DATABASE = "/tmp/archive.db"
 RATE_LIMIT = {}
 RATE_LIMIT_LOCK = threading.Lock()
 
-# ─────────────────────────── DB helpers ───────────────────────────
+
 
 def get_db():
     db = getattr(g, "_database", None)
@@ -66,7 +66,7 @@ def init_db():
         );
     """)
 
-    # Seed admin if not present
+    
     admin = db.execute("SELECT id FROM users WHERE username='admin'").fetchone()
     if not admin:
         admin_uuid = str(uuid.uuid4())
@@ -90,7 +90,7 @@ def init_db():
         ).fetchone()
         folder_id = folder["id"]
 
-        # Decoy documents (doc id 1..6)
+        
         decoys = [
             "Q3 financial projections — see attached sheet.",
             "HR onboarding checklist for new employees.",
@@ -115,14 +115,14 @@ def init_db():
 
     db.close()
 
-# ─────────────────────────── Auth helpers ───────────────────────────
+
 
 def login_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
         if "user_id" not in session:
             return redirect(url_for("login"))
-        # Guard against stale cookies after container restart (DB wiped but cookie remains)
+        
         user = get_db().execute(
             "SELECT id FROM users WHERE id=?", (session["user_id"],)
         ).fetchone()
@@ -139,9 +139,9 @@ def current_user():
         "SELECT * FROM users WHERE id=?", (session["user_id"],)
     ).fetchone()
 
-# ─────────────────────────── Rate limiter ───────────────────────────
 
-def rate_limit_check(key, max_per_minute=10):
+
+def rate_limit_check(key, max_per_minute=12):
     now = time.time()
     with RATE_LIMIT_LOCK:
         hits = RATE_LIMIT.get(key, [])
@@ -152,7 +152,7 @@ def rate_limit_check(key, max_per_minute=10):
         RATE_LIMIT[key] = hits
     return True
 
-# ─────────────────────────── Routes ───────────────────────────
+
 
 @app.route("/")
 def index():
@@ -230,7 +230,7 @@ def dashboard():
     folders = db.execute(
         "SELECT * FROM folders WHERE owner_id=?", (user["id"],)
     ).fetchall()
-    # Count docs per folder
+    
     folder_data = []
     for f in folders:
         count = db.execute(
@@ -244,10 +244,10 @@ def dashboard():
 @login_required
 def profile():
     user = current_user()
-    # VULNERABILITY: internal numeric ID exposed in rendered HTML comment (intentional)
+    
     return render_template("profile.html", user=user)
 
-# ── STEP 2 VULNERABILITY: owner param not properly server-side checked ──
+
 @app.route("/folders")
 @login_required
 def list_folders():
@@ -312,7 +312,7 @@ def new_document():
     ).fetchall()
     return render_template("new_doc.html", user=user, folders=folders, error=None)
 
-# ── STEP 3 VULNERABILITY: folder ownership NOT checked in export ──
+
 @app.route("/export")
 @login_required
 def export_document():
@@ -324,8 +324,8 @@ def export_document():
     if not folder_id or not doc_id:
         abort(400)
 
-    # Rate limit per user
-    if not rate_limit_check(f"export:{user['id']}", max_per_minute=10):
+    
+    if not rate_limit_check(f"export:{user['id']}", max_per_minute=12):
         return jsonify({"error": "Rate limit exceeded. Try again in a minute."}), 429
 
     try:
@@ -336,8 +336,8 @@ def export_document():
 
     db = get_db()
 
-    # ❌ INTENTIONAL BUG: checks folder exists + doc matches folder,
-    #    but NEVER checks folder.owner_id == user.id
+    # checks folder exists + doc matches folder,
+    # but NEVER checks folder.owner_id == user.id
     folder = db.execute("SELECT * FROM folders WHERE id=?", (folder_id,)).fetchone()
     if not folder:
         abort(404)
@@ -363,7 +363,7 @@ def export_document():
         return send_file(buf, mimetype="application/octet-stream",
                          download_name=f"doc_{doc_id}.pdf", as_attachment=True)
 
-# ── Misleading robots.txt dead end ──
+
 @app.route("/robots.txt")
 def robots():
     return app.response_class(

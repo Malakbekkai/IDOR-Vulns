@@ -9,27 +9,30 @@ DATABASE = "database.db"
 
 
 def init_db():
-    if not os.path.exists(DATABASE):
-        conn = sqlite3.connect(DATABASE)
-        c = conn.cursor()
+    # Always reset on startup — clean state every container restart
+    if os.path.exists(DATABASE):
+        os.remove(DATABASE)
 
-        c.execute("""
-            CREATE TABLE users (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                username TEXT UNIQUE,
-                password TEXT,
-                bio TEXT
-            )
-        """)
+    conn = sqlite3.connect(DATABASE)
+    c = conn.cursor()
 
-        # Admin user with flag
-        c.execute("""
-            INSERT INTO users (username, password, bio)
-            VALUES (?, ?, ?)
-        """, ("admin", "admin123", "FLAG{simple_idor_level1}"))
+    c.execute("""
+        CREATE TABLE users (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT UNIQUE,
+            password TEXT,
+            bio TEXT
+        )
+    """)
 
-        conn.commit()
-        conn.close()
+    # Admin user with flag
+    c.execute("""
+        INSERT INTO users (username, password, bio)
+        VALUES (?, ?, ?)
+    """, ("admin", "admin123", "CTF{5equ3nt14l_1d5_4r3_n0t_4uth}"))
+
+    conn.commit()
+    conn.close()
 
 
 def get_db():
@@ -58,7 +61,7 @@ def register():
                 (username, password, "This is your profile bio.")
             )
             conn.commit()
-        except:
+        except Exception:
             return "Username already exists"
         finally:
             conn.close()
@@ -96,9 +99,18 @@ def profile():
     if "user_id" not in session:
         return redirect("/login")
 
+    # Guard against stale session cookies after container restart
+    conn = get_db()
+    valid = conn.execute(
+        "SELECT id FROM users WHERE id=?", (session["user_id"],)
+    ).fetchone()
+    if not valid:
+        session.clear()
+        conn.close()
+        return redirect("/login")
+
     user_id = request.args.get("id")
 
-    conn = get_db()
     user = conn.execute(
         "SELECT * FROM users WHERE id=?",
         (user_id,)
@@ -120,4 +132,4 @@ def logout():
 
 if __name__ == "__main__":
     init_db()
-    app.run(host="0.0.0.0", port=5000)
+    app.run(host="0.0.0.0", port=5000, debug=False)

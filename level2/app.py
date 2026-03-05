@@ -9,14 +9,14 @@ DATABASE = "database.db"
 
 
 def init_db():
-    # Reset DB every container restart (good for CTF)
+    
     if os.path.exists(DATABASE):
         os.remove(DATABASE)
 
     conn = sqlite3.connect(DATABASE)
     c = conn.cursor()
 
-    # Users table
+    
     c.execute("""
         CREATE TABLE users (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -25,7 +25,7 @@ def init_db():
         )
     """)
 
-    # Documents table
+    
     c.execute("""
         CREATE TABLE documents (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -36,11 +36,11 @@ def init_db():
         )
     """)
 
-    # Create admin user
+    
     c.execute("INSERT INTO users (username, password) VALUES (?, ?)",
               ("admin", "admin123"))
 
-    # Noise invoices — skipping INV-001, INV-003, INV-004, INV-008
+    
     noise_numbers = [2, 5, 6, 7]
     for i in noise_numbers:
         public_id = f"INV-{i:03d}"
@@ -54,14 +54,14 @@ def init_db():
             public_id
         ))
 
-    # 🔥 FLAG at INV-009
+    
     c.execute("""
         INSERT INTO documents (owner_id, title, content, public_id)
         VALUES (?, ?, ?, ?)
     """, (
         1,
         "Executive Financial Summary",
-        "FLAG{medium_idor_invoice_009}",
+        "FLAG{1nv01c3_1d_15_n0t_4cc355_c0ntr0l}",
         "INV-009"
     ))
 
@@ -76,8 +76,7 @@ def get_db():
 
 
 def create_default_invoice(conn, user_id, username):
-    """Give every user the same INV-000 welcome invoice (one row per user).
-    The dashboard filters by owner_id so each user only sees their own copy."""
+    
     conn.execute("""
         INSERT INTO documents (owner_id, title, content, public_id)
         VALUES (?, ?, ?, ?)
@@ -110,12 +109,12 @@ def register():
             )
             conn.commit()
 
-            # Get the newly created user's id
+            
             user = conn.execute(
                 "SELECT id FROM users WHERE username=?", (username,)
             ).fetchone()
 
-            # Create their default invoice
+            
             create_default_invoice(conn, user["id"], username)
             conn.commit()
 
@@ -166,7 +165,7 @@ def dashboard():
     return render_template("dashboard.html", docs=docs)
 
 
-# 🔴 VULNERABLE ROUTE (PURE IDOR)
+# 🔴 IDOR
 @app.route("/invoice/<public_id>")
 def invoice(public_id):
     if "user_id" not in session:
@@ -182,7 +181,7 @@ def invoice(public_id):
     if not doc:
         return "Invoice not found"
 
-    # ❌ NO ownership validation
+    # NO ownership validation
     return render_template("invoice.html", doc=doc)
 
 
