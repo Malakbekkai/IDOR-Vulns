@@ -1,0 +1,11 @@
+version: '3.8'
+
+services:
+  level1:
+    build: ./level1
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./level1:/app
+    environment:
+      - FLASK_ENV=development
