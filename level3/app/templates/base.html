@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}The Archive{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+</head>
+<body>
+  {% if session.user_id %}
+  <nav class="navbar">
+    <div class="nav-brand">
+      <span class="brand-icon">▣</span>
+      <span class="brand-text">THE ARCHIVE</span>
+    </div>
+    <div class="nav-links">
+      <a href="{{ url_for('dashboard') }}">VAULT</a>
+      <a href="{{ url_for('profile') }}">PROFILE</a>
+      <a href="{{ url_for('logout') }}">LOGOUT</a>
+    </div>
+  </nav>
+  {% endif %}
+
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+
+  <div class="scan-line"></div>
+</body>
+</html>

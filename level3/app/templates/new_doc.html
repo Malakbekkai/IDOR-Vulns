@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}New Document — The Archive{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="page-title">▣ NEW DOCUMENT</div>
+  <div class="page-subtitle">ADD TO VAULT</div>
+</div>
+
+{% if error %}
+<div class="alert alert-error">{{ error }}</div>
+{% endif %}
+
+<div class="form-block">
+  <form method="POST">
+    <div class="field">
+      <label>FOLDER</label>
+      <select class="field-input" name="folder_id" required>
+        {% for f in folders %}
+        <option value="{{ f['id'] }}">{{ f['name'] }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="field">
+      <label>TITLE</label>
+      <input class="field-input" style="width:100%;background:var(--bg3);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:.85rem;padding:.65rem .9rem;outline:none;" type="text" name="title" required maxlength="80" />
+    </div>
+    <div class="field mt2">
+      <label>CONTENT</label>
+      <textarea class="field-input" name="content" required></textarea>
+    </div>
+    <div class="flex gap1 mt2">
+      <button class="btn btn-primary" type="submit" style="width:auto;padding:.7rem 2rem;">SAVE DOCUMENT</button>
+      <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">CANCEL</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

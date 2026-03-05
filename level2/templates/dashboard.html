@@ -1,0 +1,15 @@
+<h2>Your Invoices</h2>
+
+{% if docs %}
+  {% for doc in docs %}
+    <p>
+      <a href="/invoice/{{ doc.public_id }}">
+        {{ doc.title }} ({{ doc.public_id }})
+      </a>
+    </p>
+  {% endfor %}
+{% else %}
+  <p>No invoices found.</p>
+{% endif %}
+
+<a href="/logout">Logout</a>

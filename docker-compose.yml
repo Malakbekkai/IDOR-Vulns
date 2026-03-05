@@ -1,11 +1,27 @@
-version: '3.8'
+version: "3.9"
 
 services:
   level1:
     build: ./level1
     ports:
-      - "5000:5000"
-    volumes:
-      - ./level1:/app
+      - "5001:5000"
+    restart: always
+
+  level2:
+    build: ./level2
+    ports:
+      - "5002:5000"
+    restart: always
+
+  level3:
+    build: ./level3
+    ports:
+      - "5003:5000"
     environment:
-      - FLASK_ENV=development
+      - FLAG=CTF{1D0R_ch41n_m4st3r_arc41v1st}
+      - SECRET_KEY=change_this_in_production_please
+    restart: always
+    tmpfs:
+      - /tmp
+    security_opt:
+      - no-new-privileges:true

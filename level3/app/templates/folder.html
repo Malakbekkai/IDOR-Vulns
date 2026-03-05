@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}{{ folder['name'] }} — The Archive{% endblock %}
+
+{% block content %}
+<div class="page-header flex justify-between align-center">
+  <div>
+    <div class="page-title">◫ {{ folder['name'] }}</div>
+    <div class="page-subtitle">FOLDER ID: {{ folder['id'] }} // {{ docs|length }} DOCUMENT{% if docs|length != 1 %}S{% endif %}</div>
+  </div>
+  <div class="flex gap1">
+    <a href="{{ url_for('dashboard') }}" class="btn btn-secondary btn-sm">← BACK</a>
+    <a href="{{ url_for('new_document') }}" class="btn btn-secondary btn-sm">+ NEW</a>
+  </div>
+</div>
+
+{% if docs %}
+<table class="tbl">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>TITLE</th>
+      <th>ACTIONS</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for doc in docs %}
+    <tr>
+      <td style="color:var(--text-dim)">{{ doc['id'] }}</td>
+      <td>{{ doc['title'] }}</td>
+      <td>
+        <a class="btn btn-secondary btn-sm"
+           href="{{ url_for('export_document', folder=folder['id'], doc=doc['id'], format='txt') }}">
+          ↓ TXT
+        </a>
+        <a class="btn btn-secondary btn-sm" style="margin-left:.4rem"
+           href="{{ url_for('export_document', folder=folder['id'], doc=doc['id'], format='pdf') }}">
+          ↓ PDF
+        </a>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<div style="font-family:var(--mono);color:var(--text-dim);font-size:.8rem;padding:2rem 0;">
+  FOLDER EMPTY. <a href="{{ url_for('new_document') }}" style="color:var(--green)">ADD A DOCUMENT</a>
+</div>
+{% endif %}
+{% endblock %}

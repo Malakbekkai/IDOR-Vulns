@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Profile — The Archive{% endblock %}
+
+{% block content %}
+<!-- system: render_uid={{ user['id'] }} -->
+<div class="page-header">
+  <div class="page-title">▣ PROFILE</div>
+  <div class="page-subtitle">ACCOUNT INFORMATION</div>
+</div>
+
+<div class="profile-block">
+  <div class="profile-row">
+    <div class="profile-label">USERNAME</div>
+    <div class="profile-value">{{ user['username'] }}</div>
+  </div>
+  <div class="profile-row">
+    <div class="profile-label">USER UUID <span style="color:#5a7080;font-size:.65rem">(public identifier)</span></div>
+    <div class="profile-uid">{{ user['uuid'] }}</div>
+  </div>
+  <div class="profile-row">
+    <div class="profile-label">ACCESS LEVEL</div>
+    {% if user['is_admin'] %}
+    <span class="badge badge-red">ADMINISTRATOR</span>
+    {% else %}
+    <span class="badge badge-green">STANDARD</span>
+    {% endif %}
+  </div>
+  <div class="profile-row">
+    <div class="profile-label">VAULT STATUS</div>
+    <span class="badge badge-green">ACTIVE</span>
+  </div>
+</div>
+
+<div class="terminal mt2">
+  <div><span class="prompt">$</span> <span class="cmd">archive --whoami</span></div>
+  <div style="color:var(--text-dim)">Authenticated as: {{ user['username'] }}</div>
+  <div style="color:var(--text-dim)">Public ID: {{ user['uuid'] }}</div>
+  <div style="color:var(--text-dim)">Session valid. Permissions loaded.</div>
+</div>
+{% endblock %}

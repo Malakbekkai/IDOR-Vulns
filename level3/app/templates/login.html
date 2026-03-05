@@ -2,8 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Login — User Vault</title>
+  <title>Login — The Archive</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
@@ -11,14 +10,12 @@
 <body>
 <div class="auth-wrapper">
   <div class="auth-box">
-    <div class="auth-logo">◈ USER VAULT</div>
-    <div class="auth-sub">AUTHENTICATION REQUIRED // AUTHORIZED ACCESS ONLY</div>
+    <div class="auth-logo">▣ THE ARCHIVE</div>
+    <div class="auth-sub">SECURE DOCUMENT VAULT // AUTHORIZED ACCESS ONLY</div>
 
-    {% with messages = get_flashed_messages(with_categories=true) %}
-      {% for category, message in messages %}
-        <div class="alert alert-{{ category }}">{{ message }}</div>
-      {% endfor %}
-    {% endwith %}
+    {% if error %}
+    <div class="alert alert-error">{{ error }}</div>
+    {% endif %}
 
     <form method="POST">
       <div class="field">
@@ -33,9 +30,10 @@
     </form>
 
     <div class="auth-alt">
-      No account? <a href="/register">REGISTER</a>
+      No account? <a href="{{ url_for('register') }}">REGISTER</a>
     </div>
   </div>
 </div>
+<div class="scan-line"></div>
 </body>
 </html>

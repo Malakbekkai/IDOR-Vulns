@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Vault — The Archive{% endblock %}
+
+{% block content %}
+<div class="page-header flex justify-between align-center">
+  <div>
+    <div class="page-title">▣ VAULT <span>/ {{ user['username'] }}</span></div>
+    <div class="page-subtitle">YOUR ENCRYPTED DOCUMENT STORAGE</div>
+  </div>
+  <a href="{{ url_for('new_document') }}" class="btn btn-secondary btn-sm">+ NEW DOC</a>
+</div>
+
+<div class="grid" id="folder-grid" data-owner="{{ user['id'] }}">
+  {% for f in folders %}
+  <a class="card" href="{{ url_for('view_folder', folder_id=f['id']) }}">
+    <div class="card-icon">◫</div>
+    <div class="card-title">{{ f['name'] }}</div>
+    <div class="card-meta">{{ f['doc_count'] }} DOCUMENT{% if f['doc_count'] != 1 %}S{% endif %}</div>
+  </a>
+  {% else %}
+  <div style="font-family:var(--mono);color:var(--text-dim);font-size:.8rem;grid-column:1/-1;padding:2rem 0;">
+    NO FOLDERS FOUND.
+  </div>
+  {% endfor %}
+</div>
+
+<div class="terminal mt3">
+  <div><span class="prompt">$</span> <span class="cmd">archive --status</span></div>
+  <div style="color:var(--text-dim)">SYSTEM: Document vault online. All transfers encrypted.</div>
+  <div style="color:var(--text-dim)">TIP: Use <span style="color:var(--amber)">/export?folder=&lt;id&gt;&amp;doc=&lt;id&gt;</span> to download documents.</div>
+</div>
+
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
+{% endblock %}

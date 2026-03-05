@@ -1,21 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Register — User Vault</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
 </head>
 <body>
-    <h1>Register</h1>
-    <form action="/register" method="post">
-        <label for="username">Username</label>
-        <input type="text" id="username" name="username" required>
-        <label for="email">Email</label>
-        <input type="email" id="email" name="email" required>
-        <label for="password">Password</label>
-        <input type="password" id="password" name="password" required>
-        <button type="submit">Register</button>
+<div class="auth-wrapper">
+  <div class="auth-box">
+    <div class="auth-logo">◈ USER VAULT</div>
+    <div class="auth-sub">CREATE ACCOUNT // REQUEST ACCESS</div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% for category, message in messages %}
+        <div class="alert alert-{{ category }}">{{ message }}</div>
+      {% endfor %}
+    {% endwith %}
+
+    <form method="POST">
+      <div class="field">
+        <label>USERNAME</label>
+        <input type="text" name="username" autocomplete="off" required />
+      </div>
+      <div class="field">
+        <label>PASSWORD</label>
+        <input type="password" name="password" required />
+      </div>
+      <button class="btn btn-primary" type="submit">CREATE ACCOUNT</button>
     </form>
-    <p><a href="/login">Login</a></p>
+
+    <div class="auth-alt">
+      Already have access? <a href="/login">LOGIN</a>
+    </div>
+  </div>
+</div>
 </body>
 </html>
