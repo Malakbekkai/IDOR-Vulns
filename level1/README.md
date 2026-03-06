@@ -1,4 +1,4 @@
-# ◈ USER VAULT — Level 1 CTF Challenge
+#  USER VAULT — Level 1 CTF Challenge
 
 **Category:** Web
 **Difficulty:** Easy
@@ -55,14 +55,14 @@ Visit: `http://localhost:5001`
 ## Vulnerability
 
 ```python
-# 🔴 VULNERABLE ROUTE
+#  VULNERABLE ROUTE
 @app.route("/profile")
 def profile():
     user_id = request.args.get("id")   # taken from URL directly
     user = conn.execute(
         "SELECT * FROM users WHERE id=?", (user_id,)
     ).fetchone()
-    # ❌ never checks: user_id == session["user_id"]
+    #  never checks: user_id == session["user_id"]
     return render_template("profile.html", user=user)
 ```
 
